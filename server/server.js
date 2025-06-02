@@ -1,6 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const bcrypt = require('bcrypt')
 const cors = require('cors');
+const User = require('./db')
+const mongoose = require('mongoose')
 
 const app = express();
 const port = 5000;
@@ -8,44 +11,25 @@ const port = 5000;
 app.use(cors());
 app.use(bodyParser.json())
 
-let items = [
-    { id: 1, name: 'Apple', count: '1' },
-    { id: 2, name: 'Banana', count: '2' },
-    { id: 3, name: 'Orange', count: '4' },
-    { id: 4, name: 'Kiwi', count: '5' },
-]
 
-app.get('/items', (req, res) => {
-    res.json(items)
-})
+mongoose.connect('mongodb+srv://admin:admin@soni.hyhztqy.mongodb.net/?retryWrites=true&w=majority&appName=soni')
 
-app.post('/items', (req, res) => {
-    const exists = items.some(item => item.name === req.body.name);
-    if (exists) {
-        return res.status(400).json({ message: 'Item already existed.' });
-    } else {
-        const newItem = {
-            id: items.length + 1,
-            name: req.body.name,
-            count: req.body.count
-        }
-        items.push(newItem);
-        res.json(newItem)
+app.post('/register', async (req, res) => {
+    const { username, email, password } = req.body;
+
+    if (!username || !email || !password) {
+        return res.status(400).send({ message: 'All fields are required!' });
     }
 
-});
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = new User(req.body)
+    const savedUser = await user.save()
+    //Save data to database here
+    console.log('User registered:', { username, email, hashedPassword });
+    console.log('savedUser:', savedUser);
 
-app.put('/items/:id', (req, res) => {
-    const id = parseInt(req.params.id);
-    items = items.map(item => item.id === id ? { ...item, ...req.body } : item);
-    res.json(items.find(item => item.id === id))
-});
-
-app.delete('/items/:id', (req, res) => {
-    const id = parseInt(req.params.id);
-    items = items.filter(item => item.id !== id)
-    res.json({ message: 'Item deleted succeessfully.' });
-});
+    res.status(201).send({ message: 'User registered successfully.' })
+})
 
 app.listen(port, () => console.log(`Server running on port ${port}`));
 

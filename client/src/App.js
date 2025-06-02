@@ -1,19 +1,37 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Nav from "./Nav";
-import Home from "./pages/Home";
+import { useState } from "react";
+import axios from 'axios'
 
 function App() {
+  const [formValues, setFormValues] = useState({})
+  const [message, setMessage] = useState('')
+
+  const handleSubmit = async () => {
+    setMessage('')
+    try {
+      await axios.post('http://localhost:5000/register', formValues).then(res => {
+        const data = res.data
+        setMessage(data.message)
+        setFormValues({})
+      })
+    } catch (error) {
+      setMessage(error.response.data.message)
+    }
+  }
+
+  const handleChange = (ev) => {
+    const { name, value } = ev.target;
+    setFormValues({ ...formValues, [name]: value })
+  }
+
   return (
-    <div className="App">
-      <BrowserRouter>
-        {/* <Nav /> */}
-        <Routes>
-          <Route path='/' element={<Home />} />
-          <Route path='/create' element={<h1>Create Product</h1>} />
-          <Route path='/update' element={<h1>Update Product</h1>} />
-          <Route path='/profile' element={<h1>Profile</h1>} />
-        </Routes>
-      </BrowserRouter>
+    <div id="container">
+      <div className="form-container">
+        <input type="text" name="username" placeholder="Username" onChange={handleChange} />
+        <input type="email" name="email" placeholder="Email" onChange={handleChange} />
+        <input type="password" name="password" placeholder="Password" onChange={handleChange} />
+        {message !== '' && <p>{message}</p>}
+        <button onClick={handleSubmit}>Register</button>
+      </div>
     </div>
   );
 }
