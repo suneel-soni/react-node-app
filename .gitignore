@@ -14,4 +14,4 @@ client/.env
 .DS_Store
 Thumbs.db
 
-.vscode
+.vscode/
