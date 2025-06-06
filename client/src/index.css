@@ -19,31 +19,19 @@ code {
   margin: 1px;
 }
 
-#container {
-  max-width: 300px;
+.user-card {
+  display: block;
+  padding: 12px;
+  box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
+  width: 320px;
+  margin: 8px 0;
+  & > * {
+    margin: 4px 0;
+  }
 }
 
-.form-container {
+.user-card-header {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
-
-  input {
-    width: 100%;
-  }
-
-  button {
-    width: fit-content;
-  }
-}
-
-.items-container {
-  display: grid;
-  grid-template-columns: 1fr 0.5fr 50px 80px;
-  align-items: center;
-  gap: 2px;
-  button {
-    width: 100%;
-    justify-self: flex-end;
-  }
+  align-items: start;
+  justify-content: space-between;
 }
